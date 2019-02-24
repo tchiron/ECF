@@ -1,5 +1,9 @@
 <?php
 
+namespace App\Service;
+
+use App\Entity\User;
+
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -15,15 +19,15 @@ class PasswordHash {
     
     private $passwordEncoder;
 
-    public function __construct(UserPasswordEncoderInterface $passwordEncoder)
+    public function __construct(\Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface $passwordEncoder)
     {
         $this->passwordEncoder = $passwordEncoder;
     }
     
-    public function hash(string $password) {
-        return $this->passwordEncoder->encodePassword(
+    public function hash(User $user) {
+        return $user->setPassword($this->passwordEncoder->encodePassword(
             $user,
-            $password
-        );
+            $user->getPassword()   
+        ));
     }
 }

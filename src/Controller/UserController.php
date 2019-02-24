@@ -10,7 +10,7 @@ class UserController extends AbstractController
     /**
      * @Route("/signin", name="app_signin")
      */
-    public function index(\Symfony\Component\HttpFoundation\Request $req, PasswordHash $passwordHash ) {
+    public function index(\Symfony\Component\HttpFoundation\Request $req, \App\Service\PasswordHash $passwordHash ) {
         $dto = new \App\DTO\SigninDTO();
         $form = $this->createForm(\App\Form\SigninType::class, $dto);
         $form->handleRequest($req);
@@ -18,9 +18,10 @@ class UserController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $user = new \App\Entity\User();
             $user->setUsername($dto->getUsername());
-            $user->setPassword($passwordHash->hash($dto->getPassword()));
+            $user->setPassword($dto->getPassword());
             $user->setEmail($dto->getEmail());
             $user->setRoles(['ROLE_USER']);
+            $user = $passwordHash->hash($user);
             $em = $this->getDoctrine()->getManager();
             $em->persist($user);
             $em->flush();
